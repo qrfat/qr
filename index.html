@@ -4,25 +4,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/tailwindcss@3.0.7/dist/tailwind.min.js"></script>
     <title>Genera QR Code</title>
 </head>
 
-<body>
-    <div class="navbar">
-        <a href="index.html">Link</a>
-        <a href="immagini.html">Immagini</a>
-        <a href="testo.html">Testo</a>
-        <a href="altro.html">Altro</a>
+<body class="bg-gray-100 font-sans">
+    <!-- Navbar -->
+    <div class="bg-blue-600 text-white p-4">
+        <div class="container mx-auto flex justify-center space-x-6">
+            <a href="index.html" class="hover:text-gray-200">Link</a>
+            <a href="immagini.html" class="hover:text-gray-200">Immagini</a>
+            <a href="testo.html" class="hover:text-gray-200">Testo</a>
+            <a href="altro.html" class="hover:text-gray-200">Altro</a>
+        </div>
     </div>
-    <div class="container">
-        <h1>Genera QR Code</h1>
-        <form id="linkForm">
-            <input type="url" id="linkInput" placeholder="Inserisci il link" required>
-            <button type="submit">Genera QR Code</button>
+
+    <!-- Main content -->
+    <div class="container mx-auto mt-10 p-4 bg-white shadow-md rounded-lg max-w-lg">
+        <h1 class="text-3xl font-semibold text-center mb-6">Genera QR Code</h1>
+
+        <!-- Form -->
+        <form id="linkForm" class="space-y-4">
+            <div>
+                <input type="url" id="linkInput" placeholder="Inserisci il link" required
+                    class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div class="text-center">
+                <button type="submit"
+                    class="w-full py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    Genera QR Code
+                </button>
+            </div>
         </form>
-        <div id="qrcode"></div>
-        <button id="download">Scarica QR Code</button>
+
+        <!-- QR Code container -->
+        <div id="qrcode" class="mt-6 text-center"></div>
+
+        <!-- Download Button -->
+        <button id="download" class="mt-6 w-full py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 hidden">
+            Scarica QR Code
+        </button>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
