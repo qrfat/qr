@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genera QR Code da Immagini</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+</head>
+
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="w-full max-w-md p-8 bg-white rounded-lg shadow-md">
+        <div class="text-center mb-4">
+            <h1 class="text-3xl font-semibold text-gray-800">Genera QR Code da Immagini</h1>
+        </div>
+        <!-- Form di caricamento immagine -->
+        <form id="imageForm" class="space-y-4">
+            <input type="file" id="imageInput" accept="image/*" required class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <button type="submit" class="w-full bg-blue-600 text-white p-2 rounded-md hover:bg-blue-700 transition">Genera QR Code</button>
+        </form>
+
+        <!-- Contenitore per il QR code -->
+        <div id="qrcode" class="mt-6 text-center"></div>
+    </div>
+
+    <!-- Popup per gli errori -->
+    <div id="errorPopup" class="fixed inset-0 bg-gray-500 bg-opacity-50 flex items-center justify-center hidden">
+        <div class="bg-white p-6 rounded-md shadow-md max-w-sm w-full">
+            <h2 class="text-xl font-semibold text-red-600" id="errorMessage">Errore</h2>
+            <p class="text-gray-700" id="errorDetails">Dettagli errore</p>
+            <button id="closePopup" class="mt-4 bg-red-600 text-white p-2 rounded-md hover:bg-red-700 w-full">Chiudi</button>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('imageForm');
+        const qrCodeContainer = document.getElementById('qrcode');
+        const cloudinaryUrl = 'https://api.cloudinary.com/v1_1/dyvsdrvvo/image/upload';
+        const uploadPreset = 'qrcodeImages';
+
+        const errorPopup = document.getElementById('errorPopup');
+        const errorMessage = document.getElementById('errorMessage');
+        const errorDetails = document.getElementById('errorDetails');
+        const closePopup = document.getElementById('closePopup');
+
+        form.addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const fileInput = document.getElementById('imageInput');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                showError("Nessun file selezionato", "Per favore seleziona un file immagine.");
+                return;
+            }
+
+            // Controllo dimensione file (massimo 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                showError("File troppo grande", "Il file deve essere inferiore a 5MB.");
+                return;
+            }
+
+            // Controllo estensione (immagini e gif)
+            const allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif)$/i;
+            if (!allowedExtensions.exec(file.name)) {
+                showError("Estensione non valida", "Sono consentiti solo file di immagini (JPG, JPEG, PNG, GIF).");
+                return;
+            }
+
+            // Prevenzione Null Byte Injection
+            const fileName = file.name.toLowerCase();
+            if (fileName.includes("%00")) {
+                showError("File non valido", "Tentativo di Null Byte Injection rilevato.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', uploadPreset);
+
+            try {
+                const response = await fetch(cloudinaryUrl, {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                const data = await response.json();
+                console.log("Cloudinary Response:", data);
+
+                if (data.secure_url) {
+                    qrCodeContainer.innerHTML = '';
+                    QRCode.toCanvas(qrCodeContainer, data.secure_url, {
+                        errorCorrectionLevel: 'H'
+                    }, function(error) {
+                        if (error) {
+                            console.error('Errore nella generazione del QR Code:', error);
+                        } else {
+                            console.log('QR Code generato con successo!');
+                        }
+                    });
+                } else {
+                    showError("Errore durante il caricamento", "Impossibile caricare l'immagine su Cloudinary.");
+                }
+            } catch (error) {
+                console.error('Errore nella comunicazione con Cloudinary:', error);
+                showError("Errore di rete", "Impossibile comunicare con il server di Cloudinary.");
+            }
+        });
+
+        function showError(title, details) {
+            errorMessage.textContent = title;
+            errorDetails.textContent = details;
+            errorPopup.classList.remove('hidden');
+        }
+
+        closePopup.addEventListener('click', function() {
+            errorPopup.classList.add('hidden');
+        });
+    </script>
+</body>
+
+</html>

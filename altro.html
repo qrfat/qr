@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+    <title>Feedback e Suggerimenti</title>
+</head>
+
+<body>
+    <div class="navbar">
+        <a href="index.html">Link</a>
+        <a href="immagini.html">Immagini</a>
+        <a href="testo.html">Testo</a>
+        <a href="altro.html">Altro</a>
+    </div>
+    <div class="container">
+        <h1>Aiutaci a Migliorare!</h1>
+        <p>Hai suggerimenti o idee per nuove funzionalità? Mandaci un messaggio!</p>
+        <form id="feedbackForm">
+            <textarea id="feedback" placeholder="Scrivi qui i tuoi suggerimenti..." required></textarea>
+            <input type="email" id="email" placeholder="La tua email (opzionale)">
+            <button type="submit">Invia</button>
+        </form>
+    </div>
+
+    <script>
+        const form = document.getElementById('feedbackForm');
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const feedback = document.getElementById('feedback').value;
+            const email = document.getElementById('email').value;
+
+            if (feedback.trim() === '') {
+                alert('Per favore, inserisci un suggerimento.');
+                return;
+            }
+
+            let message = `Grazie per il tuo suggerimento!\n\nSuggerimento: ${feedback}`;
+            if (email.trim() !== '') {
+                message += `\nEmail: ${email}`;
+            }
+
+            alert(message);
+            form.reset();
+        });
+    </script>
+</body>
+
+</html>

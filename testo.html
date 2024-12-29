@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genera QR Code</title>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="w-full max-w-lg p-8 bg-white rounded-lg shadow-lg">
+        <div class="text-center mb-6">
+            <h1 class="text-3xl font-semibold text-gray-800">Genera QR Code</h1>
+        </div>
+        <form id="linkForm" class="space-y-4">
+            <input type="url" id="linkInput" placeholder="Inserisci il link" required class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <button type="submit" class="w-full bg-blue-600 text-white p-3 rounded-md hover:bg-blue-700 transition">Genera QR Code</button>
+        </form>
+        <div id="qrcode" class="mt-6 text-center"></div>
+        <button id="download" class="w-full bg-green-600 text-white p-3 rounded-md hover:bg-green-700 transition mt-4" style="display:none;">Scarica QR Code</button>
+    </div>
+
+    <script>
+        const form = document.getElementById('linkForm');
+        const linkInput = document.getElementById('linkInput');
+        const qrCodeContainer = document.getElementById('qrcode');
+        const downloadButton = document.getElementById('download');
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            // Pulisci eventuali QR Code precedenti
+            qrCodeContainer.innerHTML = '';
+            downloadButton.style.display = 'none';
+
+            const link = linkInput.value;
+            if (link) {
+                // Genera il QR Code
+                QRCode.toCanvas(link, {
+                    errorCorrectionLevel: 'H'
+                }, function(error, canvas) {
+                    if (error) {
+                        console.error('Errore nella generazione del QR Code:', error);
+                        return;
+                    }
+
+                    // Aggiungi il QR Code al contenitore
+                    qrCodeContainer.appendChild(canvas);
+
+                    // Mostra il pulsante di download
+                    downloadButton.style.display = 'block';
+
+                    // Imposta l'evento di download
+                    downloadButton.onclick = function() {
+                        const link = document.createElement('a');
+                        link.download = 'qrcode.png';
+                        link.href = canvas.toDataURL('image/png');
+                        link.click();
+                    };
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>
